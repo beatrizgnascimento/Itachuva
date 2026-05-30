@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST="{\"pages\\\\index.js -> ../components/MapaInterativo\":{\"id\":\"pages\\\\index.js -> ../components/MapaInterativo\",\"files\":[\"static/chunks/components_MapaInterativo_js.js\"]}}"

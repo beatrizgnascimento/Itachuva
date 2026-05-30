@@ -1,0 +1,65 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "chuva_mm": 72.1,
+        "temperatura": 23.8,
+        "grau_risco": "alto"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-45.4685, -22.4295],
+            [-45.463, -22.4295],
+            [-45.463, -22.424],
+            [-45.4685, -22.424],
+            [-45.4685, -22.4295]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "chuva_mm": 58.4,
+        "temperatura": 24.2,
+        "grau_risco": "medio"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-45.459, -22.4315],
+            [-45.4525, -22.4315],
+            [-45.4525, -22.425],
+            [-45.459, -22.425],
+            [-45.459, -22.4315]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "chuva_mm": 41.9,
+        "temperatura": 25.1,
+        "grau_risco": "baixo"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-45.467, -22.4205],
+            [-45.4595, -22.4205],
+            [-45.4595, -22.415],
+            [-45.467, -22.415],
+            [-45.467, -22.4205]
+          ]
+        ]
+      }
+    }
+  ]
+}
