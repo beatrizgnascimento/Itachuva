@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import CardDetalhes from "../components/CardDetalhes";
 import ModalRelato from "../components/ModalRelato";
@@ -13,7 +13,33 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [sending, setSending] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null);
+  const [climaData, setClimaData] = useState(null);
   const mapRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+
+    fetch(`${API_BASE}/api/clima`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Falha ao carregar clima: ${response.status}`);
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        if (active) {
+          setClimaData(data);
+        }
+      })
+      .catch((error) => {
+        console.error("Falha ao carregar clima", error);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleSubmit = async (nivel, descricao, tipo) => {
     if (!nivel || sending) {
@@ -43,16 +69,58 @@ export default function Home() {
   };
 
   const selectedProps = selectedFeature?.properties || null;
-  const hasDetalhes = Boolean(selectedProps);
-  const riscoSelecionado = selectedProps?.grau_risco
+  const climateRisk = climateData?.grau_risco?.toUpperCase();
+  const selectedRisk = selectedProps?.grau_risco
     ? selectedProps.grau_risco.toUpperCase()
-    : "ALTO";
-  const detalhesPadrao = {
-    chuva_mm: 45.2,
-    temperatura: 22.8,
-    umidade: 81,
-    grau_risco: "alto",
-  };
+    : climateRisk || "ALTO";
+  const displayedMetrics = selectedProps
+    ? {
+        temperatura: selectedProps.temperatura,
+        chuva_mm: selectedProps.chuva_mm,
+        umidade: selectedProps.umidade,
+      }
+    : {
+        temperatura: climateData?.temperatura_c,
+        chuva_mm: climateData?.chuva_mm,
+        umidade: climateData?.umidade,
+      };
+  const hasDetalhes = Boolean(selectedProps);
+  const currentLocationProps = useMemo(() => {
+    if (!climateData) {
+      return null;
+    }
+
+    return {
+      properties: {
+        chuva_mm: climateData.chuva_mm,
+        temperatura: climateData.temperatura_c,
+        umidade: climateData.umidade,
+        grau_risco: climateData.grau_risco,
+      },
+    };
+  }, [climateData]);
+
+  const cardMetricas = [
+    {
+      label: "Temperatura:",
+      value: displayedMetrics.temperatura ?? "-",
+      icon: "/icons/thermometer.svg",
+    },
+    {
+      label: "Chuva (mm):",
+      value: displayedMetrics.chuva_mm ?? "-",
+      icon: "/icons/cloud-rain.svg",
+    },
+    {
+      label: "Umidade:",
+      value:
+        displayedMetrics.umidade !== undefined &&
+        displayedMetrics.umidade !== null
+          ? `${displayedMetrics.umidade}%`
+          : "-",
+      icon: "/icons/humidity.svg",
+    },
+  ];
 
   return (
     <div className="relative isolate h-screen w-full overflow-hidden bg-riverLight">
@@ -60,9 +128,7 @@ export default function Home() {
         className="absolute inset-0 z-0"
         onFeatureClick={(feature) => setSelectedFeature(feature)}
         onMapClick={() => setSelectedFeature(null)}
-        onCurrentLocationClick={() =>
-          setSelectedFeature({ properties: detalhesPadrao })
-        }
+        onCurrentLocationClick={() => setSelectedFeature(currentLocationProps)}
         onMapReady={(map) => {
           mapRef.current = map;
         }}
@@ -109,7 +175,11 @@ export default function Home() {
             />
           </div>
 
-          <CardDetalhes className="mt-3" riskLabel={riscoSelecionado} />
+          <CardDetalhes
+            className="mt-3"
+            riskLabel={selectedRisk}
+            metricas={cardMetricas}
+          />
         </div>
       </div>
 
@@ -163,7 +233,7 @@ export default function Home() {
           </p>
           <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
             <span>Risco:</span>
-            <span className="font-semibold text-alert">{riscoSelecionado}</span>
+            <span className="font-semibold text-alert">{selectedRisk}</span>
           </div>
           <div className="mt-2 h-2 w-full rounded-full bg-gradient-to-r from-emerald-400 via-amber-400 to-red-500" />
           <div className="mt-3 grid grid-cols-3 gap-3 text-center text-xs">
@@ -176,7 +246,7 @@ export default function Home() {
               />
               <p className="mt-1 text-slate-400">Temperatura</p>
               <p className="mt-1 text-sm font-semibold text-storm">
-                {selectedProps.temperatura ?? "-"} C
+                {displayedMetrics.temperatura ?? "-"} C
               </p>
             </div>
             <div>
@@ -188,7 +258,7 @@ export default function Home() {
               />
               <p className="text-slate-400">Chuvas (mm)</p>
               <p className="mt-1 text-sm font-semibold text-storm">
-                {selectedProps.chuva_mm ?? "-"}
+                {displayedMetrics.chuva_mm ?? "-"}
               </p>
             </div>
             <div>
@@ -199,7 +269,12 @@ export default function Home() {
                 aria-hidden="true"
               />
               <p className="text-slate-400">Umidade</p>
-              <p className="mt-1 text-sm font-semibold text-storm">81%</p>
+              <p className="mt-1 text-sm font-semibold text-storm">
+                {displayedMetrics.umidade !== undefined &&
+                displayedMetrics.umidade !== null
+                  ? `${displayedMetrics.umidade}%`
+                  : "-"}
+              </p>
             </div>
           </div>
         </div>

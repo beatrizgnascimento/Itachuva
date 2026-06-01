@@ -8,6 +8,7 @@ import {
 } from "react-leaflet";
 
 const center = [-22.4247, -45.4601];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 const riskPalette = {
   alto: "#ef4444",
@@ -53,8 +54,14 @@ export default function MapaInterativo({
   useEffect(() => {
     let active = true;
 
-    fetch("/data/mock_previsao.json")
-      .then((response) => response.json())
+    fetch(`${API_BASE}/api/previsao`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Falha ao carregar previsao: ${response.status}`);
+        }
+
+        return response.json();
+      })
       .then((data) => {
         if (active) {
           setGeoData(data);
