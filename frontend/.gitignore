@@ -1,0 +1,36 @@
+# Node / Next.js
+node_modules/
+.next/
+out/
+*.log
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Keep generated Next.js artifacts local
+.next/cache/
+.next/server/
+.next/static/
+.next/trace
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Build / cache
+.cache/
+coverage/

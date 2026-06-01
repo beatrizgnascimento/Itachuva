@@ -69,36 +69,36 @@ export default function Home() {
   };
 
   const selectedProps = selectedFeature?.properties || null;
-  const climateRisk = climateData?.grau_risco?.toUpperCase();
+  const climateRisk = climaData?.grau_risco?.toUpperCase();
   const selectedRisk = selectedProps?.grau_risco
     ? selectedProps.grau_risco.toUpperCase()
     : climateRisk || "ALTO";
   const displayedMetrics = selectedProps
-    ? {
-        temperatura: selectedProps.temperatura,
-        chuva_mm: selectedProps.chuva_mm,
-        umidade: selectedProps.umidade,
-      }
-    : {
-        temperatura: climateData?.temperatura_c,
-        chuva_mm: climateData?.chuva_mm,
-        umidade: climateData?.umidade,
-      };
+      ? {
+          temperatura: selectedProps.temperatura,
+          chuva_mm: selectedProps.chuva_mm,
+          umidade: selectedProps.umidade,
+        }
+      : {
+          temperatura: climaData?.temperatura_c,
+          chuva_mm: climaData?.chuva_mm,
+          umidade: climaData?.umidade,
+        };
   const hasDetalhes = Boolean(selectedProps);
   const currentLocationProps = useMemo(() => {
-    if (!climateData) {
+    if (!climaData) {
       return null;
     }
 
     return {
       properties: {
-        chuva_mm: climateData.chuva_mm,
-        temperatura: climateData.temperatura_c,
-        umidade: climateData.umidade,
-        grau_risco: climateData.grau_risco,
+        chuva_mm: climaData.chuva_mm,
+        temperatura: climaData.temperatura_c,
+        umidade: climaData.umidade,
+        grau_risco: climaData.grau_risco,
       },
     };
-  }, [climateData]);
+  }, [climaData]);
 
   const cardMetricas = [
     {

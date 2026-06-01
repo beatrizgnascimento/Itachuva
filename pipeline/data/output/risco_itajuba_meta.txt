@@ -1,0 +1,2 @@
+Fonte: /home/zino/projects/Itachuva/pipeline/data/processed/grid_combinado.json
+Formato: GeoTIFF simulado
