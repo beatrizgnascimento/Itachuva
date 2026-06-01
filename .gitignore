@@ -28,3 +28,6 @@ Thumbs.db
 # Build / cache
 .cache/
 coverage/
+
+# Local setup/runtime state
+.local/

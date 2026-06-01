@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-06-01T13:21:07.361479+00:00",
+  "generated_at": "2026-06-01T14:02:34.731313+00:00",
   "source": {
     "name": "ECMWF",
     "raw_dir": "/home/zino/projects/Itachuva/pipeline/data/raw"
