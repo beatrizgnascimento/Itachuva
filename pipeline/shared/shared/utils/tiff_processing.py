@@ -55,7 +55,7 @@ def write_tiff(data: xr.DataArray, var_name: str, step: int, multi_layer: bool=F
     path = os.path.join(base_path, file_name)
 
     if get_env()['CUT'] == "True":
-        data = cut_to(data, Coords.SOUTH_AMERICA)
+        data = cut_to(data, Coords.ITAJUBA)
     
     if 'time' in data.dims and data['time'].size > 1:
         data_to_save = data.isel(time=0)
