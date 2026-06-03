@@ -18,7 +18,7 @@ if check_file_download(len(steps)):
     exit(0)
 
 st = time.time()
-print(get_env().get("VARIABLES"))
+
 get_open_files(download_date, cycle=download_cycle, params=get_env().get("VARIABLES"), steps=steps)
 
 ed = time.time()
