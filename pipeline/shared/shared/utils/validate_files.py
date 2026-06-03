@@ -55,29 +55,25 @@ def verify_tiffs(target_vars, folder):
         print(f"Pasta {folder} não encontrada para verificação")
         return
     
-    file_types = os.listdir(folder)
-
-    for file_type in file_types:
-        if file_type not in ("open", "restricted"):
-            continue
-
-        tif_files = glob.glob(os.path.join(folder, file_type, "**", "*.tif"), recursive=True)
-        
-        print(f"\nGeotiffs gerados:")
-        print(f"Total: {len(tif_files)} arquivos")
-        
-        by_variable = {}
-        for file in tif_files:
-            name = os.path.basename(file)
-            for var in target_vars:
-                if var in name:
-                    if var not in by_variable:
-                        by_variable[var] = []
-                    by_variable[var].append(file)
-                    break
-        
-        for var, files in by_variable.items():
-            print(f"\n{var.upper()} - {file_type} ({len(files)} arquivos):")
-            for file in sorted(files):
-                size_mb = os.path.getsize(file) / (1024 * 1024)
-                print(f"  - {file} ({size_mb:.1f} MB)")
+    tif_files = glob.glob(os.path.join(folder, "**", "*.tif"), recursive=True)
+    
+    print(f"\nGeotiffs gerados:")
+    print(f"Total: {len(tif_files)} arquivos")
+    
+    by_variable = {}
+    for file in tif_files:
+        name = os.path.basename(file)
+        for var in target_vars:
+            if var in name:
+                if var not in by_variable:
+                    by_variable[var] = []
+                by_variable[var].append(file)
+                break
+    
+    for var, files in by_variable.items():
+        print(f"\n{var.upper()} - ({len(files)} arquivos):")
+        for file in sorted(files):
+            size_mb = os.path.getsize(file) / (1024 * 1024)
+            print(f"  - {file} ({size_mb:.1f} MB)")
+    
+    return len(tif_files), by_variable.keys()
