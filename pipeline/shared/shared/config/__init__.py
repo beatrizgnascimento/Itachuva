@@ -1,0 +1,1 @@
+# Pode ser utilizado para substituir o papel do main em relação a chamar o init_env
