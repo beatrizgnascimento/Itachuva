@@ -110,8 +110,8 @@ def get_open_files(date: str, params: str = None, steps: list[int] = list(range(
     if params is not None and re.search(r"^[a-z0-9]+(?:\|[a-z0-9]+)*$", params) is None:
         raise ValueError("Valor inválido pra params: Informe-os seguindo p1|p2|p3|...|pn")
 
-    if cycle != "00" and cycle != "12":
-        raise ValueError("Valor inválido para cycle: Escolha entre 00 ou 12")
+    if cycle != "00" and cycle != "12" and cycle != "06" and cycle != "18":
+        raise ValueError("Valor inválido para cycle: Escolha entre 00, 06, 12 ou 18")
 
     credentials = get_env()['CREDENTIALS']['ecmwf-open']
     base_url = credentials['url']
