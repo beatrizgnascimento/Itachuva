@@ -19,6 +19,7 @@ ENV PROJ_DATA=/usr/share/proj
 WORKDIR /app
 COPY ./merge_contents_service ./merge_contents_service
 COPY ./shared ./shared
+COPY ./data/exog ./data/exog
 
 # Instalar dependências Python
 RUN pip install --no-cache-dir -r ./merge_contents_service/requirements.txt

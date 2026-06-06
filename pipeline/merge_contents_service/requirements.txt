@@ -25,9 +25,3 @@ cfgrib
 xarray
 gdal==3.10.3
 earthkit
-
-boto3==1.42.25
-botocore==1.42.25
-awscrt==0.29.2
-jmespath==1.0.1
-s3transfer==0.16.0
