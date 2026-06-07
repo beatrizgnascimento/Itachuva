@@ -1,0 +1,9 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "get-open-files"
+version = "0.1.0"
+description = "Get ECMWF open data"
+requires-python = ">=3.10"
