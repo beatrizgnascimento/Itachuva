@@ -52,6 +52,10 @@ downloads/
 eggs/
 .eggs/
 lib/
+# Excecao: o codigo do frontend em frontend/lib NAO deve ser ignorado
+# (a regra 'lib/' acima e do template Python e barrava esses arquivos).
+!frontend/lib/
+!frontend/lib/**
 lib64/
 parts/
 sdist/
