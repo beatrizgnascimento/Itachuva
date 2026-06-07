@@ -6,19 +6,18 @@ import {
   TileLayer,
   useMapEvents,
 } from "react-leaflet";
+import { getRiskColor, getRiskLabel } from "../lib/risco";
 
 const center = [-22.4247, -45.4601];
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-const riskPalette = {
-  alto: "#ef4444",
-  medio: "#f59e0b",
-  baixo: "#22c55e",
-};
-
-function MapEvents({ onMapClick, shouldIgnoreMapClick }) {
+function MapEvents({ onMapClick, onMapPick, picking, shouldIgnoreMapClick }) {
   useMapEvents({
     click(event) {
+      if (picking) {
+        onMapPick?.(event.latlng);
+        return;
+      }
       if (shouldIgnoreMapClick?.()) {
         return;
       }
@@ -35,6 +34,10 @@ export default function MapaInterativo({
   onMapClick,
   onCurrentLocationClick,
   onMapReady,
+  searchTarget,
+  picking = false,
+  onMapPick,
+  reportPoint,
 }) {
   const [geoData, setGeoData] = useState(null);
   const ignoreNextMapClickRef = useRef(false);
@@ -78,12 +81,12 @@ export default function MapaInterativo({
 
   const geoStyle = useMemo(
     () => (feature) => {
-      const risco = feature?.properties?.grau_risco || "baixo";
+      const color = getRiskColor(feature?.properties?.grau_risco);
       return {
-        color: riskPalette[risco] || riskPalette.baixo,
+        color,
         weight: 2,
-        fillColor: riskPalette[risco] || riskPalette.baixo,
-        fillOpacity: 0.4,
+        fillColor: color,
+        fillOpacity: 0.45,
       };
     },
     [],
@@ -94,9 +97,10 @@ export default function MapaInterativo({
       const props = feature?.properties || {};
       const chuva = props.chuva_mm ?? "-";
       const temp = props.temperatura ?? "-";
-      const risco = props.grau_risco || "-";
+      const umidade = props.umidade ?? "-";
+      const risco = getRiskLabel(props.grau_risco);
       layer.bindTooltip(
-        `Risco: ${risco} | Chuva: ${chuva} mm | Temp: ${temp} C`,
+        `Risco: ${risco} | Chuva: ${chuva} mm | Temp: ${temp} C | Umidade: ${umidade}%`,
         { sticky: true },
       );
       layer.on("click", (event) => {
@@ -109,17 +113,24 @@ export default function MapaInterativo({
   );
 
   return (
-    <div className={`map-shell ${className}`.trim()}>
+    <div className={`map-shell ${className} ${picking ? "cursor-crosshair" : ""}`.trim()}>
       <MapContainer
         center={center}
         zoom={13}
-        scrollWheelZoom={false}
+        scrollWheelZoom={true}
         zoomControl={false}
-        whenCreated={onMapReady}
+        ref={(map) => {
+          // react-leaflet v4 removeu whenCreated; o ref expoe a instancia do Leaflet.
+          if (map) {
+            onMapReady?.(map);
+          }
+        }}
         className="h-full w-full"
       >
         <MapEvents
           onMapClick={onMapClick}
+          onMapPick={onMapPick}
+          picking={picking}
           shouldIgnoreMapClick={shouldIgnoreMapClick}
         />
         <TileLayer
@@ -163,6 +174,29 @@ export default function MapaInterativo({
             data={geoData}
             style={geoStyle}
             onEachFeature={onEachFeature}
+          />
+        ) : null}
+        {searchTarget ? (
+          <CircleMarker
+            center={[searchTarget.latitude, searchTarget.longitude]}
+            radius={9}
+            pathOptions={{
+              color: "#7c3aed",
+              fillColor: "#7c3aed",
+              fillOpacity: 0.9,
+            }}
+          />
+        ) : null}
+        {reportPoint ? (
+          <CircleMarker
+            center={[reportPoint.latitude, reportPoint.longitude]}
+            radius={10}
+            pathOptions={{
+              color: "#db2777",
+              fillColor: "#db2777",
+              fillOpacity: 0.85,
+              weight: 3,
+            }}
           />
         ) : null}
       </MapContainer>

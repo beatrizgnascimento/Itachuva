@@ -1,19 +1,24 @@
 import { useEffect, useState } from "react";
+import { RISK_LEVELS } from "../lib/risco";
 
-const niveis = [
-  { value: 1, label: "Nenhum", color: "bg-emerald-100 text-emerald-700" },
-  { value: 2, label: "Fraco", color: "bg-lime-100 text-lime-700" },
-  { value: 3, label: "Medio", color: "bg-amber-100 text-amber-700" },
-  { value: 4, label: "Forte", color: "bg-orange-100 text-orange-700" },
-  { value: 5, label: "Extremo", color: "bg-red-100 text-red-700" },
-];
+const niveis = RISK_LEVELS.map((level) => ({
+  value: level.value,
+  label: level.label,
+  color: level.badgeClass,
+}));
 
 const tipos = [
   { value: "alagamento", label: "Alagamento" },
   { value: "chuva", label: "Chuva intensa" },
 ];
 
-export default function ModalRelato({ open, sending, onClose, onSubmit }) {
+export default function ModalRelato({
+  open,
+  sending,
+  onClose,
+  onSubmit,
+  localLabel,
+}) {
   const [nivel, setNivel] = useState(null);
   const [descricao, setDescricao] = useState("");
   const [tipo, setTipo] = useState("alagamento");
@@ -41,7 +46,7 @@ export default function ModalRelato({ open, sending, onClose, onSubmit }) {
       aria-modal="true"
       aria-labelledby="relato-title"
     >
-      <div className="w-full max-w-xl rounded-t-3xl bg-white p-6 shadow-float">
+      <div className="mb-6 w-full max-w-xl rounded-3xl bg-white p-6 pb-7 shadow-float">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">
@@ -88,11 +93,11 @@ export default function ModalRelato({ open, sending, onClose, onSubmit }) {
               <button
                 key={item.value}
                 type="button"
-                className={`flex h-12 flex-col items-center justify-center rounded-xl border text-xs font-semibold transition ${
+                className={`flex h-12 flex-col items-center justify-center rounded-xl border text-xs font-semibold transition ${item.color} ${
                   nivel === item.value
-                    ? "border-storm text-storm"
-                    : "border-slate-200 text-slate-500"
-                } ${item.color}`}
+                    ? "border-storm ring-2 ring-storm/70"
+                    : "border-transparent"
+                }`}
                 onClick={() => setNivel(item.value)}
                 aria-pressed={nivel === item.value}
               >
@@ -119,7 +124,7 @@ export default function ModalRelato({ open, sending, onClose, onSubmit }) {
           <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100">
             !
           </span>
-          <span>Confirmar local: Av. BPS, 139 - Centro</span>
+          <span>{localLabel || "Localizando sua posicao..."}</span>
         </div>
 
         <button

@@ -1,19 +1,15 @@
-const riskStyles = {
-  ALTO: "text-alert",
-  MEDIO: "text-sun",
-  BAIXO: "text-safe",
-};
+import { getRiskLevel } from "../lib/risco";
 
 export default function CardDetalhes({
   className = "",
-  riskLabel = "ALTO",
+  riskLabel = "nenhum",
   metricas = [
     { label: "Temperatura:", value: "24 C", icon: "/icons/thermometer.svg" },
     { label: "Chuva (mm):", value: "65.2", icon: "/icons/cloud-rain.svg" },
     { label: "Umidade:", value: "80%", icon: "/icons/humidity.svg" },
   ],
 }) {
-  const risco = riskLabel.toUpperCase();
+  const nivel = getRiskLevel(riskLabel);
 
   return (
     <div
@@ -22,10 +18,12 @@ export default function CardDetalhes({
       <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-500">
         Risco na sua posicao
       </p>
-      <p
-        className={`mt-1 text-sm font-bold ${riskStyles[risco] || "text-alert"}`}
-      >
-        {risco}
+      <p className={`mt-1 text-sm font-bold ${nivel.textClass}`}>
+        {nivel.label.toUpperCase()}
+      </p>
+      {/* RF05 - recomendacao automatica de seguranca conforme o nivel de risco */}
+      <p className="mt-1 text-[12px] leading-snug text-slate-600">
+        {nivel.recomendacao}
       </p>
       <div className="mt-3 grid grid-cols-3 gap-3 text-center">
         {metricas.map((item) => (

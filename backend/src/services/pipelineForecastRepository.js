@@ -7,9 +7,11 @@ const DEFAULT_FORECAST_PATH = path.resolve(
 );
 
 const RISK_ORDER = {
+  nenhum: 0,
   baixo: 1,
   medio: 2,
   alto: 3,
+  extremo: 4,
 };
 
 async function readJson(filePath) {
