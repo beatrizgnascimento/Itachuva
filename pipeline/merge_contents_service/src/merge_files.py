@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 
 from shared.config.env import get_env
-from shared.utils.datecycle import get_date, get_cycle
+from shared.utils.datecycle import get_cycle
 
 import rioxarray
 import os
@@ -194,7 +194,7 @@ def merge_contents_service():
     danger = danger.drop(['Fli', 'Ri', 'Fi', 'F_hgt', 'F_water'])
     
     tp = forecasts[0].rename({'y': 'latitude', 'x': 'longitude'})
-    t2m = forecasts[1].rename({'y': 'latitude', 'x': 'longitude'}) - 257.15
+    t2m = forecasts[1].rename({'y': 'latitude', 'x': 'longitude'}) - 273.15
     r = forecasts[2].rename({'y': 'latitude', 'x': 'longitude'})
 
     df_danger = danger['danger'].to_dataframe().reset_index()
@@ -207,7 +207,7 @@ def merge_contents_service():
         2: "baixo", 
         3: "medio", 
         4: "alto", 
-        5: "muito alto"
+        5: "extremo"
     }
 
     for idx, row in enumerate(df_filtered.itertuples()):
@@ -262,7 +262,7 @@ def merge_contents_service():
                 "chuva_mm": round(float(rain_val), 1),
                 "temperatura": round(float(temp_val), 1),
                 "umidade": round(float(umid_val), 1),
-                "grau_risco": "sem risco"
+                "grau_risco": "nenhum"
             }
         })
         
@@ -299,8 +299,6 @@ def _get_forecasts() -> tuple[DataArray]:
     time_diff = cur_time - cur_cycle
 
     next_step = round(time_diff / 3) * 3
-
-    print(next_step)
 
     file_dir = get_env()['GTIFF_OUT']
 
@@ -349,11 +347,16 @@ def _get_forecasts() -> tuple[DataArray]:
 
 
 def _get_reports() -> pd.DataFrame:
-    url = f"{get_env()['BACKEND_URL']}/ocorrencias"
-    response = requests.get(url)
-    data = response.json()
-    
-    return pd.DataFrame(data)
+    try:
+        url = f"{get_env()['BACKEND_URL']}/ocorrencias"
+        response = requests.get(url)
+        data = response.json()
+        
+        return pd.DataFrame(data)
+    except Exception as e:
+        print("Não foi possível obter dataframes")
+        print(e)
+        return pd.DataFrame()
 
 def _discretize_matrix(value: DataArray | Dataset, limits: list) -> DataArray | Dataset:
     binned = apply_ufunc(

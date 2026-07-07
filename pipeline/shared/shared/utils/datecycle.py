@@ -21,6 +21,6 @@ def get_cycle():
         o ciclo definido no .env caso contrário.
     """
     if get_env()['ENVIRONMENT'] == 'production':
-        return '00' if datetime.now().hour < 9 else '06' if datetime.now().hour < 15 else '12' if datetime.now().hour < 21 else '18'
+        return '00' if datetime.now().hour < 10 else '06' if datetime.now().hour < 16 else '12' if datetime.now().hour < 22 else '18'
     else:
         return get_env()['DOWNLOAD_CYCLE']

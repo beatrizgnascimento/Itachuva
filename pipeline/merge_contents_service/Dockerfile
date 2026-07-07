@@ -10,16 +10,10 @@ RUN apt-get update && apt-get install -y \
     libgdal-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Variáveis obrigatórias para o GDAL funcionar
-ENV GDAL_DATA=/usr/share/gdal/3.6
-ENV PROJ_LIB=/usr/share/proj
-ENV PROJ_DATA=/usr/share/proj
-
 # Copiar arquivos do projeto
 WORKDIR /app
 COPY ./merge_contents_service ./merge_contents_service
 COPY ./shared ./shared
-COPY ./data/exog ./data/exog
 
 # Instalar dependências Python
 RUN pip install --no-cache-dir -r ./merge_contents_service/requirements.txt

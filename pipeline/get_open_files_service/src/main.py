@@ -13,6 +13,8 @@ download_cycle = get_cycle()
 
 steps = list(range(0, 27, 3))
 
+print(f"Buscando {len(steps)} arquivos")
+
 if check_file_download(len(steps)):
     print("Arquivos já baixados. Ignorando download.")
     exit(0)
