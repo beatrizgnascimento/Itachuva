@@ -15,11 +15,14 @@ ENV PROJ_DATA=/usr/share/proj
 
 WORKDIR /app
 
-COPY ./open_services/setup_files_service/requirements.txt ./requirements.txt
+COPY ./setup_files_service/requirements.txt ./requirements.txt
+
+RUN pip install --no-cache-dir "numpy<2,>=1.24"
+RUN pip install --no-cache-dir --no-build-isolation GDAL==3.6.4
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./open_services/setup_files_service ./setup_files_service
+COPY ./setup_files_service ./setup_files_service
 COPY ./shared ./shared
 
 RUN pip install ./setup_files_service && pip install ./shared

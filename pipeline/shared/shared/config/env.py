@@ -30,19 +30,16 @@ def init_env():
     credentials_file = getenv('CREDENTIALS_FILE')
     environment = getenv('ENVIRONMENT')
     cut = getenv('CUT')
-    state = getenv('STATE')
 
     assert grib_out is not None and grib_out != '', "A variavel 'GRIB_OUT' não está configurada no .env, por favor inclua-a no arquivo. Observe .env.example para maiores detalhes."
     assert tiff_out is not None and tiff_out != '', "A variavel 'GTIFF_OUT' não está configurada no .env, por favor inclua-a no arquivo. Observe .env.example para maiores detalhes."
     assert credentials_file is not None and credentials_file != '', "A variavel 'CREDENTIALS_FILE' não está configurada no .env, por favor inclua-a no arquivo. Observe .env.example para maiores detalhes."
     assert environment is not None and environment != '', "A variavel 'ENVIRONMENT' não está configurada no .env, por favor inclua-a no arquivo. Observe .env.example para maiores detalhes."
-    assert state is not None and state != '', "A variavel 'STATE' não está configurada no .env, por favor inclua-a no arquivo. Observe .env.example para maiores detalhes."
     
     
     assert cut is not None and cut != '', "A variavel 'CUT' não está configurada no .env, por favor inclua-a no arquivo. Observe .env.example para maiores detalhes."
     assert cut == "False" or cut == "True", "'CUT' pode ter apenas dois valores: 'True' ou 'False'"
     assert environment == "production" or environment == "development", "'ENVIRONMENT' pode ter apenas dois valores: 'production' ou 'development'"
-    assert state == "training" or state == "execution", "'STATE' pode ter apenas dois valores: 'training' ou 'execution'"
 
     credentials = _get_credentials()
     

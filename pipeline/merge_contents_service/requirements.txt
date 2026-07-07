@@ -23,5 +23,6 @@ tomli==2.3.0
 urllib3==2.5.0
 cfgrib
 xarray
-gdal==3.10.3
 earthkit
+
+rioxarray

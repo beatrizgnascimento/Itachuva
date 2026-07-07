@@ -1,6 +1,4 @@
-import cv2
 import xarray as xr
-import numpy as np
 import os
 from osgeo import gdal
 from shared.config.env import get_env
