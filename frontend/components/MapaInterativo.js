@@ -29,6 +29,7 @@ function MapEvents({ onMapClick, onMapPick, picking, shouldIgnoreMapClick }) {
 }
 
 export default function MapaInterativo({
+  position,
   className = "",
   onFeatureClick,
   onMapClick,
@@ -41,6 +42,8 @@ export default function MapaInterativo({
 }) {
   const [geoData, setGeoData] = useState(null);
   const ignoreNextMapClickRef = useRef(false);
+
+  const currentPos = position ? [position.latitude, position.longitude] : center;
 
   const suppressNextMapClick = () => {
     ignoreNextMapClickRef.current = true;
@@ -138,7 +141,7 @@ export default function MapaInterativo({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <CircleMarker
-          center={center}
+          center={currentPos}
           radius={20}
           eventHandlers={{
             click: (event) => {
@@ -154,7 +157,7 @@ export default function MapaInterativo({
           }}
         />
         <CircleMarker
-          center={center}
+          center={currentPos}
           radius={8}
           eventHandlers={{
             click: (event) => {

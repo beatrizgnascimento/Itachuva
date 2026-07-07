@@ -29,15 +29,15 @@ export default function Home() {
   const [reportLocation, setReportLocation] = useState(null);
   const mapRef = useRef(null);
 
-  useEffect(() => {
+useEffect(() => {
     let active = true;
 
-    fetch(`${API_BASE}/api/clima`)
+    // Agora passamos a lat e lon para a API saber de onde pegar o clima e o risco
+    fetch(`${API_BASE}/api/clima?lat=${position.latitude}&lon=${position.longitude}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Falha ao carregar clima: ${response.status}`);
         }
-
         return response.json();
       })
       .then((data) => {
@@ -52,10 +52,12 @@ export default function Home() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [position]);
 
-  // RF04 - obter a posicao real do usuario para registrar a ocorrencia.
+// RF04 - obter a posicao real do usuario para registrar a ocorrencia.
   useEffect(() => {
+    let active = true;
+
     if (typeof navigator === "undefined" || !navigator.geolocation) {
       setFeedback({
         type: "error",
@@ -65,22 +67,39 @@ export default function Home() {
     }
 
     navigator.geolocation.getCurrentPosition(
+      // 1º PARÂMETRO: Função de Sucesso
       (pos) => {
-        setPosition({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-        });
+        if (active) {
+          const novaPosicao = {
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          };
+          
+          setPosition(novaPosicao);
+          
+          // Faz o mapa voar para a sua localizacao real assim que o GPS carregar
+          if (mapRef.current) {
+            mapRef.current.flyTo([novaPosicao.latitude, novaPosicao.longitude], 16);
+          }
+        }
       },
+      // 2º PARÂMETRO: Função de Erro
       (error) => {
-        // Torna o motivo visivel para diagnostico (1=permissao, 2=indisponivel, 3=timeout).
-        console.warn("Geolocalizacao indisponivel", error.code, error.message);
-        setFeedback({
-          type: "error",
-          message: `GPS indisponivel (codigo ${error.code}: ${error.message}). Usando centro de Itajuba.`,
-        });
+        if (active) {
+          console.warn("Geolocalizacao indisponivel", error.code, error.message);
+          setFeedback({
+            type: "error",
+            message: `GPS indisponivel (codigo ${error.code}: ${error.message}). Usando centro de Itajuba.`,
+          });
+        }
       },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
+      // 3º PARÂMETRO: Objeto de Opções
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   // RNP08 - some o feedback automaticamente apos alguns segundos.
@@ -198,7 +217,7 @@ export default function Home() {
 
   const selectedProps = selectedFeature?.properties || null;
   // RF03 - risco do local selecionado ou da posicao atual, na escala de 5 niveis.
-  const riskSource = selectedProps?.grau_risco ?? climaData?.grau_risco ?? "nenhum";
+  const riskSource = selectedProps?.grau_risco ?? "nenhum";
   const nivelAtual = getRiskLevel(riskSource);
   const displayedMetrics = selectedProps
       ? {
@@ -260,6 +279,7 @@ export default function Home() {
   return (
     <div className="relative isolate h-screen w-full overflow-hidden bg-riverLight">
       <MapaInterativo
+        position={position}
         className="absolute inset-0 z-0"
         onFeatureClick={(feature) => setSelectedFeature(feature)}
         onMapClick={() => setSelectedFeature(null)}

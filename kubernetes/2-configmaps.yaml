@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pipeline-env
+  namespace: xrsc07
+data:
+  GRIB_OUT: /app/data/grib
+  GTIFF_OUT: /app/data/tiff
+  CREDENTIALS_FILE: /run/secrets/credentials.json
+  VARIABLES: tp|2t|r
+  ENVIRONMENT: production
+  DOWNLOAD_DATE: "20260606"
+  DOWNLOAD_CYCLE: "00"
+  CUT: "True"
+  BACKEND_URL: "http://itachuva-backend-port:4000/api"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-env
+  namespace: xrsc07
+data:
+  PORT: "4000"
+  DATABASE_URL: postgres://postgres:postgres@postgres:5432/itachuva
+  PGSSLMODE: disable
+  CORS_ORIGIN: http://itachuva-frontend-port:3000
+  PIPELINE_PREVISAO_PATH: /app/data/geojson/grid.json
+  PIPELINE_CLIMA_PATH: /app/data/geojson/grid.json

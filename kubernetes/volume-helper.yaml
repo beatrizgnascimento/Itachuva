@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volume-helper-pod
+  namespace: xrsc07
+spec:
+  containers:
+  - name: helper
+    image: alpine
+    command: ["sleep", "7200"] # Mantém o pod vivo por 2 horas para dar tempo de copiar
+    volumeMounts:
+    - name: dados-volume
+      mountPath: /app/data
+  volumes:
+  - name: dados-volume
+    persistentVolumeClaim:
+      claimName: itachuva-pipeline-volume

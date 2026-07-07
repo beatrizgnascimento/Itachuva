@@ -1,0 +1,94 @@
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: cron-workflow
+  namespace: xrsc07
+spec:
+  schedule: "0,15,30,45 * * * *"
+  timezone: "America/Sao_Paulo"
+  concurrencyPolicy: "Forbid"
+  startingDeadlineSeconds: 7200
+
+  workflowSpec:
+    serviceAccountName: argo-workflow
+    entrypoint: get-open-files
+    volumes:
+      - name: credentials
+        secret:
+          secretName: ecmwf-credentials
+      - name: data
+        persistentVolumeClaim:
+          claimName: itachuva-pipeline-volume
+
+    templates:
+      - name: get-open-files
+        dag:
+          tasks:
+            - name: get-open-files
+              template: get-open-files-template
+            - name: setup-files
+              template: setup-files-template
+              dependencies:
+                - get-open-files
+            - name: merge-contents
+              template: merge-contents-template
+              dependencies:
+                - setup-files
+
+      - name: get-open-files-template
+        container:
+          image: gabrieltoti/get-open-files-service:latest
+          imagePullPolice: Always
+          env:
+            - name: TZ
+              value: "America/Sao_Paulo"
+          envFrom:
+            - configMapRef:
+                name: pipeline-env
+            - secretRef:
+                name: ecmwf-credentials
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+            - name: credentials
+              mountPath: /run/secrets/credentials.json
+              subPath: credentials.json
+              readOnly: true
+      - name: setup-files-template
+        container:
+          image: gabrieltoti/setup-files-service:latest
+          imagePullPolice: Always
+          env:
+            - name: TZ
+              value: "America/Sao_Paulo"
+          envFrom:
+            - configMapRef:
+                name: pipeline-env
+            - secretRef:
+                name: ecmwf-credentials
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+            - name: credentials
+              mountPath: /run/secrets/credentials.json
+              subPath: credentials.json
+              readOnly: true
+      - name: merge-contents-template
+        container:
+          image: gabrieltoti/merge-contents-service:latest
+          imagePullPolice: Always
+          env:
+            - name: TZ
+              value: "America/Sao_Paulo"
+          envFrom:
+            - configMapRef:
+                name: pipeline-env
+            - secretRef:
+                name: ecmwf-credentials
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+            - name: credentials
+              mountPath: /run/secrets/credentials.json
+              subPath: credentials.json
+              readOnly: true
